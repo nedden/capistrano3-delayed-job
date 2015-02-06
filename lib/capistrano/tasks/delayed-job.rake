@@ -34,8 +34,8 @@ namespace :delayed_job do
     on roles(delayed_job_roles) do
       within release_path do
         with rails_env: fetch(:rails_env) do
-          capture(execute :bundle, :exec, delayed_job_bin, delayed_job_args, :status) do |stream|
-            puts stream
+          with_verbosity Logger::DEBUG do
+            execute :bundle, :exec, delayed_job_bin, delayed_job_args, :status
           end
         end
       end
@@ -66,6 +66,16 @@ namespace :delayed_job do
 
   after 'deploy:publishing', 'restart' do
     invoke 'delayed_job:restart'
+  end
+
+  def with_verbosity(output_verbosity)
+    old_verbosity = SSHKit.config.output_verbosity
+    begin
+      SSHKit.config.output_verbosity = output_verbosity
+      yield
+    ensure
+      SSHKit.config.output_verbosity = old_verbosity
+    end
   end
 
 end

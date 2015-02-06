@@ -6,6 +6,7 @@ namespace :delayed_job do
     args << "--queues=#{fetch(:delayed_job_queues).join(',')}" unless fetch(:delayed_job_queues).nil?
     args << "--prefix=#{fetch(:delayed_job_prefix)}" unless fetch(:delayed_job_prefix).nil?
     args << fetch(:delayed_job_pools, {}).map {|k,v| "--pool=#{k}:#{v}"}.join(' ') unless fetch(:delayed_job_pools).nil?
+    args << "--pid-dir=#{fetch(:delayed_job_pid_path)}" unless fetch(:delayed_job_pid_path).nil?
     args.join(' ')
   end
 
@@ -61,6 +62,7 @@ namespace :load do
     set :delayed_job_workers, 1
     set :delayed_job_queues, nil
     set :delayed_job_pools, nil
+    set :delayed_job_pid_path, nil
     set :delayed_job_roles, :app
     set :delayed_job_bin_path, 'bin'
   end
